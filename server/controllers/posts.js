@@ -37,3 +37,31 @@ export const updatePost = async (req, res) => {
 
   res.json(updatePost);
 };
+
+export const deletePost = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).send("Post Not Found");
+
+  await PostMessage.findByIdAndRemove(id);
+
+  res.json({ message: "Post deleted sucessfully " });
+};
+
+export const likePost = async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).send("Post Not Found");
+
+  const post = await PostMessage.findById(id);
+  const count = post.likeCount + 1;
+  const updatedPost = await PostMessage.findByIdAndUpdate(
+    id,
+    { likeCount: count },
+    { new: true }
+  );
+
+  res.json(updatedPost);
+};
